@@ -34,12 +34,12 @@ class TestTextNode(unittest.TestCase):
 
     def test_repr_without_url(self):
         node = TextNode("Hello", TextType.TEXT)
-        expected = "TextNode(Hello, text, None)"
+        expected = "TextNode('Hello', text, None)"
         self.assertEqual(repr(node), expected)
 
     def test_repr_with_url(self):
         node = TextNode("Click me", TextType.LINK, "https://example.com")
-        expected = "TextNode(Click me, link, https://example.com)"
+        expected = "TextNode('Click me', link, https://example.com)"
         self.assertEqual(repr(node), expected)
 
     def test_eq_type_check(self):
