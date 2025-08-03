@@ -1,6 +1,6 @@
 import os
 import shutil
-from page_generator import generate_page
+from page_generator import generate_pages_recursive
 
 def copy_static(src, dst):
     if os.path.exists(dst):
@@ -19,13 +19,13 @@ def copy_static(src, dst):
 def main():
     base = os.path.dirname(__file__)
     static_src = os.path.join(base, "..", "static")
+    content_dir = os.path.join(base, "..", "content")
     public_dst = os.path.join(base, "..", "public")
-    content_md = os.path.join(base, "..", "content", "index.md")
-    template_html = os.path.join(base, "..", "template.html")
-    output_html = os.path.join(public_dst, "index.html")
+    template_path = os.path.join(base, "..", "template.html")
 
     copy_static(static_src, public_dst)
-    generate_page(content_md, template_html, output_html)
+    generate_pages_recursive(content_dir, template_path, public_dst)
 
 if __name__ == "__main__":
     main()
+
