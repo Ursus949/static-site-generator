@@ -20,8 +20,9 @@ def generate_page(from_path: str, template_path: str, dest_path: str, base_path=
     html_content = html_node.to_html()
     title = extract_title(md_content)
 
-    result = template_content.replace("{{ Title }}", title).replace("{{ Content }}", html_content)
-    result = result.replace('href="/', f'href="{base_path}').replace('src="/', f'src="{base_path}')
+    result = template_content.replace("{{ Title }}", title)\
+                             .replace("{{ Content }}", html_content)\
+                             .replace("{{ base_path }}", base_path)
 
     os.makedirs(os.path.dirname(dest_path), exist_ok=True)
     with open(dest_path, "w", encoding="utf-8") as f:
@@ -37,5 +38,5 @@ def generate_pages_recursive(dir_path_content, template_path, dest_dir_path, bas
             generate_page(full_path, template_path, dest_file, base_path)
 
         elif os.path.isdir(full_path):
-            generate_pages_recursive(full_path, template_path, dest_path)
+            generate_pages_recursive(full_path, template_path, dest_path, base_path)
 
