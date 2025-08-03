@@ -25,10 +25,12 @@ class TextNode:
         )
 
     def __repr__(self):
-        #TextNode(TEXT, TEXT_TYPE, URL)
         return f"TextNode({self.text!r}, {self.text_type.value}, {self.url})"
 
-def text_node_to_html_node(text_node):
+def text_node_to_html_node(text_node, base_path=""):
+    # Prevent double slashes when base_path and URL are both absolute
+    normalized_base = base_path.rstrip("/") if base_path != "/" else ""
+
     if text_node.text_type == TextType.TEXT:
         return LeafNode(None, text_node.text)
     elif text_node.text_type == TextType.BOLD:
@@ -40,10 +42,11 @@ def text_node_to_html_node(text_node):
     elif text_node.text_type == TextType.LINK:
         if not text_node.url:
             raise ValueError("LINK TextNode requires a URL")
-        return LeafNode("a", text_node.text, props={"href": text_node.url})
+        return LeafNode("a", text_node.text, props={"href": normalized_base + text_node.url})
     elif text_node.text_type == TextType.IMAGE:
         if not text_node.url:
             raise ValueError("IMAGE TextNode requires a URL")
-        return LeafNode("img", "", props={"src": text_node.url, "alt": text_node.text})
+        return LeafNode("img", "", props={"src": normalized_base + text_node.url, "alt": text_node.text})
     else:
         raise ValueError(f"Unsupported TextType: {text_node.text_type}")
+

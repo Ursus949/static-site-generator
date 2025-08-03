@@ -4,45 +4,45 @@ from inline_markdown import text_to_textnodes
 from textnode import text_node_to_html_node, TextNode, TextType
 from htmlnode import ParentNode
 
-def markdown_to_html_node(markdown):
+def markdown_to_html_node(markdown, base_path=""):
     blocks = markdown_to_blocks(markdown)
     children = []
     for block in blocks:
-        html_node = block_to_html_node(block)
+        html_node = block_to_html_node(block, base_path)
         children.append(html_node)
     return ParentNode("div", children, None)
 
-def block_to_html_node(block):
+def block_to_html_node(block, base_path=""):
     block_type = block_to_block_type(block)
     if block_type == BlockType.PARAGRAPH:
-        return paragraph_to_html_node(block)
+        return paragraph_to_html_node(block, base_path)
     if block_type == BlockType.HEADING:
-        return heading_to_html_node(block)
+        return heading_to_html_node(block, base_path)
     if block_type == BlockType.CODE:
         return code_to_html_node(block)
     if block_type == BlockType.OLIST:
-        return olist_to_html_node(block)
+        return olist_to_html_node(block, base_path)
     if block_type == BlockType.ULIST:
-        return ulist_to_html_node(block)
+        return ulist_to_html_node(block, base_path)
     if block_type == BlockType.QUOTE:
-        return quote_to_html_node(block)
+        return quote_to_html_node(block, base_path)
     raise ValueError("invalid block type")
 
-def text_to_children(text):
+def text_to_children(text, base_path=""):
     text_nodes = text_to_textnodes(text)
     children = []
     for text_node in text_nodes:
-        html_node = text_node_to_html_node(text_node)
+        html_node = text_node_to_html_node(text_node, base_path)
         children.append(html_node)
     return children
 
-def paragraph_to_html_node(block):
+def paragraph_to_html_node(block, base_path=""):
     lines = block.split("\n")
     paragraph = " ".join(lines)
-    children = text_to_children(paragraph)
+    children = text_to_children(paragraph, base_path)
     return ParentNode("p", children)
 
-def heading_to_html_node(block):
+def heading_to_html_node(block, base_path=""):
     level = 0
     for char in block:
         if char == "#":
@@ -52,7 +52,7 @@ def heading_to_html_node(block):
     if level + 1 >= len(block):
         raise ValueError(f"invalid heading level: {level}")
     text = block[level + 1 :]
-    children = text_to_children(text)
+    children = text_to_children(text, base_path)
     return ParentNode(f"h{level}", children)
 
 def code_to_html_node(block):
@@ -64,25 +64,25 @@ def code_to_html_node(block):
     code = ParentNode("code", [child])
     return ParentNode("pre", [code])
 
-def olist_to_html_node(block):
+def olist_to_html_node(block, base_path=""):
     items = block.split("\n")
     html_items = []
     for item in items:
         text = item[3:]
-        children = text_to_children(text)
+        children = text_to_children(text, base_path)
         html_items.append(ParentNode("li", children))
     return ParentNode("ol", html_items)
 
-def ulist_to_html_node(block):
+def ulist_to_html_node(block, base_path=""):
     items = block.split("\n")
     html_items = []
     for item in items:
         text = item[2:]
-        children = text_to_children(text)
+        children = text_to_children(text, base_path)
         html_items.append(ParentNode("li", children))
     return ParentNode("ul", html_items)
 
-def quote_to_html_node(block):
+def quote_to_html_node(block, base_path=""):
     lines = block.split("\n")
     new_lines = []
     for line in lines:
@@ -90,5 +90,6 @@ def quote_to_html_node(block):
             raise ValueError("invalid quote block")
         new_lines.append(line.lstrip(">").strip())
     content = " ".join(new_lines)
-    children = text_to_children(content)
+    children = text_to_children(content, base_path)
     return ParentNode("blockquote", children)
+

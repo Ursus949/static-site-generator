@@ -16,7 +16,7 @@ def generate_page(from_path: str, template_path: str, dest_path: str, base_path=
     with open(template_path, "r", encoding="utf-8") as f:
         template_content = f.read()
 
-    html_node = markdown_to_html_node(md_content)
+    html_node = markdown_to_html_node(md_content, base_path)
     html_content = html_node.to_html()
     title = extract_title(md_content)
 
